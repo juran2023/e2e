@@ -11,12 +11,13 @@ import {
   deleteOne,
 } from '../services/posts'
 import { Post } from '../db/models/post'
+import { User } from '../db/models/user'
 
 describe('creating posts', () => {
   test('with all parameters should succeed', async () => {
     const post = {
       title: 'Hello Mongoose!',
-      author: 'Daniel Bugl',
+      author: createdSampleUsers[0]._id,
       contents: 'This post is stored in a MongoDB database using Mongoose.',
       tags: ['mongoose', 'mongodb'],
     }
@@ -49,6 +50,7 @@ describe('creating posts', () => {
     test('with minimal parameters should succeed', async () => {
       const post = {
         title: 'Only a title',
+        author: createdSampleUsers[0]._id,
       }
 
       const createdPost = await createPost(post)
@@ -96,8 +98,9 @@ describe('listing posts', () => {
       )
     }),
     test('should be able to filter posts by author', async () => {
-      const posts = await listAllPostsByAuthor('Daniel Bugl')
+      const posts = await listAllPostsByAuthor(createdSampleUsers[0]._id)
       expect(posts.length).toBe(3)
+      console.log(`found posts length: ${posts.length}`, posts)
     }),
     test('should be able to filter posts by tag', async () => {
       const posts = await listAllPostsByTag('react')
@@ -119,13 +122,15 @@ describe('getting a post', () => {
 
 describe('updating posts', () => {
   test('should update the specified property', async () => {
-    await updatePost(createdSamplePosts[0]._id, { author: 'test author' })
+    await updatePost(createdSamplePosts[0]._id, {
+      author: createdSampleUsers[1]._id,
+    })
     const updatedPost = await getPostById(createdSamplePosts[0]._id)
-    expect(updatedPost.author).toEqual('test author')
+    expect(updatedPost.author).toEqual(createdSampleUsers[1]._id)
   }),
     test('should not update other properties', async () => {
       await updatePost(createdSamplePosts[0]._id, {
-        author: 'test author',
+        author: createdSampleUsers[1]._id,
       })
 
       const post = await getPostById(createdSamplePosts[0]._id)
@@ -133,7 +138,7 @@ describe('updating posts', () => {
     }),
     test('should update the updatedAt property', async () => {
       await updatePost(createdSamplePosts[0]._id, {
-        author: 'test author',
+        author: createdSampleUsers[1]._id,
       })
 
       const updatedPost = await getPostById(createdSamplePosts[0]._id)
@@ -143,7 +148,7 @@ describe('updating posts', () => {
     }),
     test('should fail if the id dose not exist', async () => {
       const post = await updatePost('000000000000000000000000', {
-        author: 'test author',
+        author: createdSampleUsers[1]._id,
       })
       expect(post).toEqual(null)
     })
@@ -174,12 +179,33 @@ const samplePosts = [
   { title: 'Guide to TypeScript' },
 ]
 
+const sampleUsers = [
+  { username: 'Daniel Bugl', password: '123456' },
+  { username: 'anonymous', password: '123456' },
+]
+
 let createdSamplePosts = []
+let createdSampleUsers = []
 
 beforeEach(async () => {
+  await User.deleteMany({})
+  createdSampleUsers = []
+  for (const user of sampleUsers) {
+    const createdUser = new User(user)
+    createdSampleUsers.push(await createdUser.save())
+  }
+
   await Post.deleteMany({})
   createdSamplePosts = []
   for (const post of samplePosts) {
+    const authorUser = createdSampleUsers.find(
+      (u) => u.username === post.author,
+    )
+    if (authorUser) {
+      post.author = authorUser._id
+    } else {
+      post.author = createdSampleUsers[1]._id // 认 anonymous 用户
+    }
     const createdPost = new Post(post)
     createdSamplePosts.push(await createdPost.save())
   }
