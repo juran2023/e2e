@@ -3,7 +3,8 @@ import { test, expect } from '@playwright/test'
 test('allows sign up and log in', async ({ page }) => {
   const testUser = 'test' + Date.now()
   await page.goto('/')
-  await page.getByRole('link', { name: 'Sign Up' }).click()
+  /*   await page.getByRole('link', { name: 'Sign Up' }).click() */
+  await page.locator('text=Sign Up').click()
   await page.getByLabel('Username:').click()
   await page.getByLabel('Username:').fill(testUser)
   await page.getByLabel('Password:').click()
