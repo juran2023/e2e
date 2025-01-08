@@ -1,6 +1,12 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { User } from '../db/models/user.js'
+import dotenv from 'dotenv'
+
+if (!process.env.JWT_SECRET) {
+  console.log(process.env.JWT_SECRET)
+  dotenv.config({ path: '.env.template' })
+}
 
 export async function createUser({ username, password }) {
   const hashedPassword = await bcrypt.hash(password, 10)
