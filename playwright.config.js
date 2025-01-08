@@ -78,5 +78,6 @@ export default defineConfig({
   // },
   webServer: {
     command: 'npm run e2e',
+    url: 'http://localhost:5173',
   },
 })
