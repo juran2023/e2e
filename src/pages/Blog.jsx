@@ -2,14 +2,15 @@
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg' */
 /* import { Post } from './components/Post.jsx' */
-import { CreatePost } from './components/CreatePost.jsx'
-import { PostList } from './components/PostList.jsx'
-import { PostSorting } from './components/PostSorting.jsx'
-import { PostFilter } from './components/PostFilter.jsx'
+import { CreatePost } from '../components/CreatePost.jsx'
+import { PostList } from '../components/PostList.jsx'
+import { PostSorting } from '../components/PostSorting.jsx'
+import { PostFilter } from '../components/PostFilter.jsx'
 import { useQuery } from '@tanstack/react-query'
-import { getPosts } from './api/posts.js'
+import { getPosts } from '../api/posts.js'
 import { useState } from 'react'
-
+import { Header } from '../components/Header.jsx'
+import { Helmet } from 'react-helmet-async'
 /* const posts = [
   {
     title: 'Full-Stack React Projects',
@@ -32,6 +33,17 @@ export function Blog() {
   const posts = postsQuery.data ?? []
   return (
     <div style={{ padding: 8 }}>
+      <Helmet>
+        <title>Full-Stack React Blog</title>
+        <meta
+          name='description'
+          content='A blog full of articles about full-stack React development.'
+        />
+      </Helmet>
+      <Header />
+      <br />
+      <hr />
+      <br />
       <CreatePost />
       <br />
       <hr />
@@ -54,3 +66,7 @@ export function Blog() {
     </div>
   )
 }
+
+/* Blog.propTypes = {
+  initialData: PropTypes.shape(PostList.propTypes.posts),
+} */

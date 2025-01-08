@@ -8,6 +8,8 @@ import {
   deleteOne,
 } from '../services/posts.js'
 
+import { requireAuth } from '../middleware/jwt.js'
+
 export function postsRoutes(app) {
   app.get('/api/v1/posts', async (req, res) => {
     const { sortBy, sortOrder, author, tag } = req.query
@@ -44,9 +46,9 @@ export function postsRoutes(app) {
     }
   })
 
-  app.post('/api/v1/posts', async (req, res) => {
+  app.post('/api/v1/posts', requireAuth, async (req, res) => {
     try {
-      const post = await createPost(req.body)
+      const post = await createPost(req.auth.sub, req.body)
       return res.json(post)
     } catch (e) {
       console.error(`error createing post`, e)
@@ -54,9 +56,9 @@ export function postsRoutes(app) {
     }
   })
 
-  app.patch('/api/v1/posts/:id', async (req, res) => {
+  app.patch('/api/v1/posts/:id', requireAuth, async (req, res) => {
     try {
-      const post = await updatePost(req.params.id, req.body)
+      const post = await updatePost(req.auth.sub, req.params.id, req.body)
       return res.json(post)
     } catch (e) {
       console.error('error updating post', e)
@@ -64,9 +66,9 @@ export function postsRoutes(app) {
     }
   })
 
-  app.delete('/api/v1/posts/:id', async (req, res) => {
+  app.delete('/api/v1/posts/:id', requireAuth, async (req, res) => {
     try {
-      const { deletedCount } = await deleteOne(req.params.id)
+      const { deletedCount } = await deleteOne(req.auth.sub, req.params.id)
       if (deletedCount === 0) {
         return res.sendStatus(404)
       }
