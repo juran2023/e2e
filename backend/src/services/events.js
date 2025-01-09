@@ -8,5 +8,5 @@ export async function trackEvent({
   date = new Date(),
 }) {
   const event = new Event({ post: postId, action, session, date })
-  return await Event.save(event)
+  return await event.save()
 }

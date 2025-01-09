@@ -5,7 +5,7 @@ const eventSchema = new Schema(
     post: { type: Schema.Types.ObjectId, ref: 'post', required: true },
     session: { type: String, required: true },
     action: { type: String, required: true },
-    date: { type: String, required: true },
+    date: { type: Date, required: true },
   },
   {
     timestamps: true,

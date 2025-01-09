@@ -9,5 +9,5 @@ export function initDatabase() {
   })
 
   /*const connection = **/
-  mongoose.connect(DATABASE_URL)
+  return mongoose.connect(DATABASE_URL)
 }
