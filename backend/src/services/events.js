@@ -50,24 +50,24 @@ export async function getDailyDurations(postId) {
       $project: {
         session: '$session',
         startDate: {
-          $cond: [{ $eq: ['action', 'startView'] }, '$date', undefined],
+          $cond: [{ $eq: ['$action', 'startView'] }, '$date', undefined],
         },
         endDate: {
-          $cond: [{ $eq: ['action', 'endView'] }, '$date', undefined],
+          $cond: [{ $eq: ['$action', 'endView'] }, '$date', undefined],
         },
       },
     },
     {
       $group: {
         _id: '$session',
-        startDate: { $min: 'startDate' },
-        endDate: { max: '$endDate' },
+        startDate: { $min: '$startDate' },
+        endDate: { $max: '$endDate' },
       },
     },
     {
       $project: {
         day: { $dateTrunc: { date: '$startDate', unit: 'day' } },
-        duration: { $subtract: ['$endDate', 'startDate'] },
+        duration: { $subtract: ['$endDate', '$startDate'] },
       },
     },
     {
